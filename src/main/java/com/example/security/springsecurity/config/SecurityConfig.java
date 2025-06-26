@@ -6,6 +6,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -14,24 +16,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain springSecurity(HttpSecurity http) throws Exception {
+        return  http
+                .csrf(c -> c.disable())
+                .authorizeHttpRequests(r -> r.anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(s ->
+                        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
 
-//        disable csrf(close)
-        http.csrf(c -> c.disable());
 
-//        desable autherization
-        // because we write http.build with @bean it disable the autherization, so we need to enalee
-//        ?it show output as access to locahost is denied
-        http.authorizeHttpRequests(r -> r.anyRequest().authenticated());
+    }
 
-//        enable login page
-//        http.formLogin(Customizer.withDefaults());
-
-//        to work with postman or rest api we need to do this
-        http.httpBasic(Customizer.withDefaults());
-
-//        to have each time different session id
-        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        return http.build();
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager();
     }
 }
