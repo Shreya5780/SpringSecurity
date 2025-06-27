@@ -5,9 +5,11 @@ import org.springframework.cglib.proxy.NoOp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,7 +33,9 @@ public class SecurityConfig {
     public SecurityFilterChain springSecurity(HttpSecurity http) throws Exception {
         return  http
                 .csrf(c -> c.disable())
-                .authorizeHttpRequests(r -> r.anyRequest().authenticated())
+                .authorizeHttpRequests(r -> r
+                        .requestMatchers("register", "login").permitAll() //if req is register or login then permit all else authenticate
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -49,29 +53,13 @@ public class SecurityConfig {
         return daoAuthenticationProvider;
     }
 
+//    to enable the JWT
+    @Bean
+    public AuthenticationManager  authenticationManager(AuthenticationConfiguration  authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
 
 
 
-//  -----------------  manual way to add users  -------------------------------
-
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//
-//        UserDetails user1 = User
-//                .withDefaultPasswordEncoder()
-//                .username("het")
-//                .password("h@123")
-//                .roles("USER")
-//                .build();
-//
-//        UserDetails user2 = User
-//                .withDefaultPasswordEncoder()
-//                .username("bimal")
-//                .password("b@123")
-//                .roles("ADMIN")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(user1, user2);
-//    }
 }
