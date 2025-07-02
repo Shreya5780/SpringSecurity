@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class UserService {
@@ -25,10 +24,13 @@ public class UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     public UserModel registerUser(UserModel userModel) {
-
+        System.out.println(userModel.getUsername());
+        System.out.println(userModel.getPassword());
         userModel.setPassword(bCryptPasswordEncoder.encode(userModel.getPassword()));
 
-        return userRepo.save(userModel);
+        userRepo.save(userModel);
+
+        return userModel;
     }
 
     public String verify(UserModel userModel) {

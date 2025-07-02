@@ -1,6 +1,5 @@
 package com.example.security.springsecurity.model;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,6 +18,7 @@ public class UserModel {
                 ", password='" + password + '\'' +
                 '}';
     }
+
 
     public String getId() {
         return id;
